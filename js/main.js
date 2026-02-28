@@ -81,7 +81,7 @@ function renderDisplay() {
 
   // Sub-label: orbit position
   document.getElementById('yearSub').textContent =
-    `Galactic orbit ${orbit + 1} of ~20 — ${(fraction * 100).toFixed(1)}% through this orbit`;
+    `Galactic year ${20 -orbit}, Galactic day ${(fraction * 365.25).toFixed(0)}`;
 
   // Orbit badge
   document.getElementById('orbitCounter').textContent = `Orbit ${orbit + 1} / 20`;
