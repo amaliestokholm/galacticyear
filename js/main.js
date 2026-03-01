@@ -21,6 +21,7 @@ const MILESTONES = [
 let totalMya         = 0;     // 0 = present, 4600 = birth of Sun
 let isDragging       = false;
 let scrubbing        = false;
+let prevDragAngle = null;
 let lastMilestoneKey = null;
 let hasInteracted    = false;
 let showSeasons      = false;
@@ -83,7 +84,7 @@ function renderDisplay() {
   // Sub-label: orbit position
   document.getElementById('yearSub').textContent =
     `Galactic year ${20 -orbit}, Galactic day ${(fraction * 365.25).toFixed(0)}`;
-  document.getElementById('orbitCounter').textContent = `Orbit ${orbit + 1} / 20`;
+  document.getElementById('orbitCounter').textContent = `Year ${20 - orbit}`;
 
   // Total progress bar
   document.getElementById('progressFill').style.width = `${(totalMya / SUN_AGE_MYA) * 100}%`;
@@ -360,10 +361,11 @@ function screenPointToAngle(cx, cy) {
 svg.addEventListener('pointerdown', (e) => {
   if (Math.abs(distFromCenter(e.clientX, e.clientY) - getScreenRadius()) < 40) {
     isDragging = true;
+    prevDragAngle = screenPointToAngle(e.clientX, e.clientY);
     svg.setPointerCapture(e.pointerId);
     e.preventDefault();
     fadeArrow();
-    const myaInOrbit = angleToMyaInOrbit(screenPointToAngle(e.clientX, e.clientY));
+    const myaInOrbit = angleToMyaInOrbit(prevDragAngle);
     totalMya = Math.max(0, Math.min(SUN_AGE_MYA, getOrbitNumber(totalMya) * MYA_PER_ORBIT + myaInOrbit));
     render();
   }
@@ -372,16 +374,21 @@ svg.addEventListener('pointerdown', (e) => {
 svg.addEventListener('pointermove', (e) => {
   if (!isDragging) return;
   e.preventDefault();
-  const myaInOrbit = angleToMyaInOrbit(screenPointToAngle(e.clientX, e.clientY));
+  const newAngle = screenPointToAngle(e.clientX, e.clientY);
   // Fix that you cannot 'go to future'
-  const orbitBase = getOrbitNumber(totalMya) * MYA_PER_ORBIT;
-  const newMya    = Math.max(0, Math.min(SUN_AGE_MYA, orbitBase + myaInOrbit));
-  totalMya = newMya;
+  let delta = newAngle - prevDragAngle;
+  if (delta > 180)  delta -= 360;
+  if (delta < -180) delta += 360;
+
+  const deltaMya = (delta / 360) * MYA_PER_ORBIT;
+  const candidate = totalMya + deltaMya;
+  totalMya = Math.max(0, Math.min(SUN_AGE_MYA, candidate));
+  prevDragAngle = newAngle;
   render();
 });
 
-svg.addEventListener('pointerup',     () => { isDragging = false; });
-svg.addEventListener('pointercancel', () => { isDragging = false; });
+svg.addEventListener('pointerup',     () => { isDragging = false; prevDragAngle = null; });
+svg.addEventListener('pointercancel', () => { isDragging = false; prevDragAngle = null; });
 
 // Linear time line
 const scrubberTrack = document.getElementById('scrubberTrack');

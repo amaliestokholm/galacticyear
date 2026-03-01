@@ -71,17 +71,22 @@
     background: var(--panel);
     border: 2px solid rgba(201,168,76,0.2);
     border-radius: 2px;
-    padding: 22px 28px;
-    max-width: 700px;
+    padding: 26px 36px;
+    max-width: 960px;
     width: calc(100% - 40px);
     margin: 16px auto 0;
     backdrop-filter: blur(10px);
-    font-size: 0.92rem;
+    font-size: 1.05rem;
+    text-align: center;
     color: var(--dim);
-    line-height: 1.8;
+    line-height: 1.25;
   }
 
-  .intro-panel p + p { margin-top: 0.8em; }
+  .intro-panel p {
+  margin: 0;
+  }
+
+  .intro-panel p + p { margin-top: 0.45em; }
 
   .intro-panel strong {
     color: var(--gold);
@@ -168,7 +173,7 @@
   }
 
   .year-label {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     letter-spacing: 0.2em;
     color: var(--dim);
     text-transform: uppercase;
@@ -177,7 +182,7 @@
 
   .year-display {
     font-family: 'Cinzel', serif;
-    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
     color: var(--gold2);
     text-shadow: 0 0 20px rgba(240,208,128,0.4);
     line-height: 1.1;
@@ -185,7 +190,7 @@
   }
 
   .year-sub {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     color: var(--teal);
     letter-spacing: 0.1em;
   }
@@ -206,7 +211,7 @@
   }
 
   .milestone-era {
-    font-size: 0.85rem;
+    font-size: 0.92rem;
     letter-spacing: 0.2em;
     color: var(--gold);
     text-transform: uppercase;
@@ -215,13 +220,13 @@
 
   .milestone-title {
     font-family: 'Cinzel', serif;
-    font-size: 1em;
+    font-size: 1.1em;
     color: var(--star);
     margin-bottom: 6px;
   }
 
   .milestone-desc {
-    font-size: 0.85;
+    font-size: 0.95rem;
     color: var(--dim);
     line-height: 1.7;
   }
@@ -234,7 +239,7 @@
   }
 
   .no-milestone {
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     color: var(--dim);
     font-style: italic;
     margin-top: 16px;
@@ -246,7 +251,7 @@
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.85em;
+    font-size: 0.95em;
     letter-spacing: 0.18em;
     color: var(--teal);
     background: rgba(79,195,195,0.08);
@@ -303,7 +308,7 @@
   .scrubber-label-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--dim);
     letter-spacing: 0.1em;
     margin-bottom: 6px;
@@ -437,10 +442,10 @@
 
 
 <div class="intro-panel">
-  <p>Galactic time scales are much longer than human time scales. Here is one way to illustrate it:</p>
-  <p>On Earth, we define a <strong>year</strong> as the time that passes when the Earth completes one full orbit around our star, the Sun.</p>
-  <p>Similarly, we can define a <strong>Galactic year</strong> as the time that passes when the Sun completes a full orbit around the centre of our galaxy, the Milky Way.</p>
-  <p>Below you see the Milky Way galaxy from the top-down, as if you are looking at it from the outside. The <strong>yellow dot</strong> represents our Sun and solar system. <strong>Drag it around its orbit</strong> to move back in time and explore what happened on Earth at each point along its journey through time and space.</p>
+	<p><strong>Galactic time spans are vastly longer than the time scales we experience as humans.</strong></p>
+	<p>On Earth, a <strong>year</strong> is defined as the time it takes our planet Earth to complete one full orbit around our star, the Sun.</p><p>In a similar way, we can define a <strong>Galactic year</strong> as the time it takes the Sun to complete a full orbit around the center of our galaxy, the Milky Way.</p><br><br>
+  <p>In the view below, you see the Milky Way galaxy from above, as though observing it from outside the galaxy. The <strong>yellow dot</strong> marks the position of our Sun and solar system.</p>
+  <p><strong>By dragging it along its orbit</strong>, you can travel backward in time and discover what was happening on Earth at different stages of its vast journey through space and time.</p>
 </div>
 
 <div class="main-layout">
