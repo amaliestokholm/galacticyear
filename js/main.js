@@ -10,11 +10,8 @@ const TOTAL_ORBITS     = SUN_AGE_MYA / (GALACTIC_YEAR / 1_000_000); // ~20.44
 // We want "Birth of the Sun" to appear at the 2nd month of Winter (Jan) on the ring.
 // Season layout: Spring 0–0.25, Summer 0.25–0.5, Autumn 0.5–0.75, Winter 0.75–1.0
 // 2nd month of Winter = month 11 of 12 = orbit fraction 10/12 = 0.8333
-// Birth of Sun: mya=4600, orbit fraction = (4600 % 225)/225 = 100/225 = 0.4444
-// We want Birth of the Sun at 12 o'clock (fraction = 0 after offset).
-// Birth of Sun orbit frac = 100/225 -> 0.4444
-// PHASE_OFFSET + 0.4444 -> 0 (mod 1) -> PHASE_OFFSET = 1 − 0.4444 = 0.5556
-const PHASE_OFFSET = 0.5556;
+// If 0.8333 should be on top: 1- 0.8333 = 0.1667
+const PHASE_OFFSET = 0.1667;
 
 // SVG coordinate constants (viewBox is 0 0 460 460)
 const CX = 230, CY = 230, R = 185;
@@ -87,7 +84,7 @@ function renderOrbit() {
   const fraction = getOrbitFraction(totalMya);
 
   document.getElementById('handle').setAttribute('transform', `translate(${pos.x},${pos.y})`);
-  const arcStart = 90 + PHASE_OFFSET * 360;
+  const arcStart = PHASE_OFFSET * 360 - 90;
   document.getElementById('progressArc').setAttribute('transform', `rotate(${arcStart} ${CX} ${CY})`);
   document.getElementById('progressArc').setAttribute('stroke-dashoffset', CIRCUMFERENCE * (1 - fraction));
 }
