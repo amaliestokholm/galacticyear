@@ -1,4 +1,4 @@
-# Showcase: What is a Galactic year
+# Showcase: What is a year in our Galaxy?
 
 This is a small visualisation that puts the time scales of Galactic phenomenae into the context of Earth's history.
 
