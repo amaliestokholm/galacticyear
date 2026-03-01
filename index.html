@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>One Galactic Year</title>
+<title>Showcase: A Galactic Year</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -66,22 +66,55 @@
     text-transform: uppercase;
   }
 
-  header h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.4rem;
+  .intro-panel {
+    position: relative; z-index: 10;
+    background: var(--panel);
+    border: 2px solid rgba(201,168,76,0.2);
+    border-radius: 2px;
+    padding: 22px 28px;
+    max-width: 700px;
+    width: calc(100% - 40px);
+    margin: 16px auto 0;
+    backdrop-filter: blur(10px);
+    font-size: 0.92rem;
     color: var(--dim);
-    margin-top: 8px;
+    line-height: 1.8;
+  }
+
+  .intro-panel p + p { margin-top: 0.8em; }
+
+  .intro-panel strong {
+    color: var(--gold);
+    font-weight: 700;
   }
 
   .main-layout {
     position: relative; z-index: 10;
     display: flex;
-    flex-direction: column;
+    flex-direction: wrap;
     align-items: center;
+    align-items: flex-start;
     gap: 20px;
     padding: 20px;
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
+  }
+
+   .orbit-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+
+  .info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1 1 300px;
+    min-width: 260px;
+    max-width: 420px;
   }
 
   .orbit-wrapper {
@@ -129,7 +162,7 @@
     border-radius: 2px;
     padding: 24px 28px;
     width: 100%;
-    max-width: 460px;
+    min-height: 200px;
     backdrop-filter: blur(10px);
     box-shadow: 0 0 40px rgba(0,0,0,0.5), inset 0 0 30px rgba(79,195,195,0.03);
   }
@@ -164,7 +197,7 @@
     margin-top: 16px;
     padding: 14px 16px;
     border-left: 2px solid var(--gold);
-    min-height: 200px;
+    min-height: 120px;
   }
 
   @keyframes fadeSlide {
@@ -359,7 +392,7 @@
 <div class="stars"></div>
 
 <header>
-  <h1>One Galactic Year</h1>
+  <h1>A Galactic Year</h1>
   <h2>What happened on planet Earth</h2>
   <h2>while our Sun made a round around the Milky Way?</h2>
   <h2>  Galactic time scales are rather different from the ones we know from Earth; Drag the Sun around its orbit;</h2>
