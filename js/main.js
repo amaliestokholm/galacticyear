@@ -6,6 +6,16 @@ const GALACTIC_YEAR    = 225_000_000;   // years per orbit
 const SUN_AGE_MYA      = 4600;          // age of the Sun in million years
 const TOTAL_ORBITS     = SUN_AGE_MYA / (GALACTIC_YEAR / 1_000_000); // ~20.44
 
+// This moves the entire 'year'.
+// We want "Birth of the Sun" to appear at the 2nd month of Winter (Jan) on the ring.
+// Season layout: Spring 0–0.25, Summer 0.25–0.5, Autumn 0.5–0.75, Winter 0.75–1.0
+// 2nd month of Winter = month 11 of 12 = orbit fraction 10/12 = 0.8333
+// Birth of Sun: mya=4600, orbit fraction = (4600 % 225)/225 = 100/225 = 0.4444
+// We want Birth of the Sun at 12 o'clock (fraction = 0 after offset).
+// Birth of Sun orbit frac = 100/225 -> 0.4444
+// PHASE_OFFSET + 0.4444 -> 0 (mod 1) -> PHASE_OFFSET = 1 − 0.4444 = 0.5556
+const PHASE_OFFSET = 0.5556;
+
 // SVG coordinate constants (viewBox is 0 0 460 460)
 const CX = 230, CY = 230, R = 185;
 const CIRCUMFERENCE = 2 * Math.PI * R;
@@ -31,14 +41,20 @@ const MYA_PER_ORBIT = GALACTIC_YEAR / 1_000_000; // 225
 function getOrbitNumber(mya)   { return Math.floor(mya / MYA_PER_ORBIT); }
 function getOrbitFraction(mya) { return (mya % MYA_PER_ORBIT) / MYA_PER_ORBIT; }
 
-/** Circle angle (degrees, 0=top, CW) for a given totalMya. */
-function myaToAngle(mya) {
-  return (180 + getOrbitFraction(mya) * 360) % 360;
+// Shift everything according to PHASE_OFFSET
+function fracToAngle(frac) { return ((PHASE_OFFSET + frac) % 1) * 360; }
+function angleToFrac(deg) { return ((deg / 360) - PHASE_OFFSET + 2) % 1; }
+
+function myaToAngle(mya) { return fracToAngle(getOrbitFraction(mya)); }
+function angleToMyaInOrbit(deg) { return angleToFrac(deg) * MYA_PER_ORBIT; }
+
+function getHandlePos(deg) {
+  const rad = (deg - 90) * Math.PI / 180;
+  return { x: CX + R * Math.cos(rad), y: CY + R * Math.sin(rad) };
 }
 
-function angleToMyaInOrbit(deg) {
-  return ((deg - 180 + 360) % 360) / 360 * MYA_PER_ORBIT;
-}
+// get in radians for geometry to work
+function fracToScreenRad(f) { return (fracToAngle(f) - 90) * Math.PI / 180; }
 
 function formatMya(mya) {
   if (mya < 0.001) return '0 years ago';
@@ -59,9 +75,9 @@ function getActiveMilestone(mya) {
   return closest;
 }
 
-function getHandlePos(deg) {
-  const rad = (deg - 90) * Math.PI / 180;
-  return { x: CX + R * Math.cos(rad), y: CY + R * Math.sin(rad) };
+// Galactic year counter: present = 20.44, counts down as we go back
+function getGalacticYear(mya) {
+  return (TOTAL_ORBITS - mya / MYA_PER_ORBIT).toFixed(2);
 }
 
 // Rendering
@@ -71,25 +87,23 @@ function renderOrbit() {
   const fraction = getOrbitFraction(totalMya);
 
   document.getElementById('handle').setAttribute('transform', `translate(${pos.x},${pos.y})`);
+  const arcStart = 90 + PHASE_OFFSET * 360;
+  document.getElementById('progressArc').setAttribute('transform', `rotate(${arcStart} ${CX} ${CY})`);
   document.getElementById('progressArc').setAttribute('stroke-dashoffset', CIRCUMFERENCE * (1 - fraction));
 }
 
 function renderDisplay() {
   const orbit    = getOrbitNumber(totalMya);
   const fraction = getOrbitFraction(totalMya);
+  const gyStr    = getGalacticYear(totalMya);
 
-  // Main year text
   document.getElementById('yearDisplay').textContent = formatMya(totalMya);
-
-  // Sub-label: orbit position
   document.getElementById('yearSub').textContent =
-    `Galactic year ${20 -orbit}, Galactic day ${(fraction * 365.25).toFixed(0)}`;
-  document.getElementById('orbitCounter').textContent = `Year ${20 - orbit}`;
+    `Galactic year ${gyStr}, Galactic day ${Math.round(fraction * 365.25)}`;
+  document.getElementById('orbitCounter').textContent = `Year ${gyStr}`;
 
   // Total progress bar
   document.getElementById('progressFill').style.width = `${(totalMya / SUN_AGE_MYA) * 100}%`;
-
-  // Scrubber thumb
   const thumb = document.getElementById('scrubberThumb');
   if (thumb) thumb.style.left = `${(totalMya / SUN_AGE_MYA) * 100}%`;
 
@@ -126,6 +140,7 @@ function render() {
 	renderDisplay();
 	drawTicks();
 	renderSeasonSlices();
+	updateStarParticles();
 }
 
 // SVG tick marks (per-orbit milestones)
@@ -135,13 +150,9 @@ function drawTicks() {
   const currentOrbit = getOrbitNumber(totalMya);
 
   for (const m of MILESTONES) {
-    const milestoneOrbit = getOrbitNumber(m.mya);
-    if (milestoneOrbit !== currentOrbit) continue;
-
-    const posInOrbit = m.mya % MYA_PER_ORBIT;
-    const frac = posInOrbit / MYA_PER_ORBIT;
-    const deg  = (180 + frac * 360) % 360;
-    const rad  = (deg - 90) * Math.PI / 180;
+    if (getOrbitNumber(m.mya) !== currentOrbit) continue;
+    const deg = fracToAngle(getOrbitFraction(m.mya));
+    const rad = (deg - 90) * Math.PI / 180;
     const inner = R - 10, outer = R + 10;
 
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -149,7 +160,7 @@ function drawTicks() {
     line.setAttribute('y1', CY + inner * Math.sin(rad));
     line.setAttribute('x2', CX + outer * Math.cos(rad));
     line.setAttribute('y2', CY + outer * Math.sin(rad));
-    line.setAttribute('stroke', 'rgba(201,168,76,0.3)');
+    line.setAttribute('stroke', 'rgba(201,168,76,0.5)');
     line.setAttribute('stroke-width', '2');
     tickGroup.appendChild(line);
   }
@@ -164,7 +175,7 @@ function drawScrubberMarkers() {
     const mark  = document.createElement('div');
     mark.className  = 'scrubber-mark';
     mark.style.left = `${frac * 100}%`;
-    mark.title      = `${m.title} (${m.mya === 0 ? 'now' : formatMya(m.mya)})`;
+    mark.title = `${m.title} (${m.mya === 0 ? 'now' : formatMya(m.mya)})`;
     mark.addEventListener('click', () => animateTo(m.mya));
     container.appendChild(mark);
   }
@@ -179,19 +190,13 @@ const SEASONS = [
 ];
 
 function arcPath(startFrac, endFrac) {
-  // Orbit starts at bottom (180deg offset), goes CW
-  // startFrac 0 = bottom of circle
-  function fracToRad(f) { return (Math.PI / 2) + f * 2 * Math.PI; } // bottom = π/2
   const r1 = 168, r2 = 202; // inner/outer radius for the wedge band
-
-  const sa = fracToRad(startFrac);
-  const ea = fracToRad(endFrac);
-
+  const sa = fracToScreenRad(startFrac);
+  const ea = fracToScreenRad(endFrac);
   const x1o = CX + r2 * Math.cos(sa), y1o = CY + r2 * Math.sin(sa);
   const x2o = CX + r2 * Math.cos(ea), y2o = CY + r2 * Math.sin(ea);
   const x1i = CX + r1 * Math.cos(ea), y1i = CY + r1 * Math.sin(ea);
   const x2i = CX + r1 * Math.cos(sa), y2i = CY + r1 * Math.sin(sa);
-
   const large = (endFrac - startFrac) > 0.5 ? 1 : 0;
   return `M ${x1o} ${y1o} A ${r2} ${r2} 0 ${large} 1 ${x2o} ${y2o} L ${x1i} ${y1i} A ${r1} ${r1} 0 ${large} 0 ${x2i} ${y2i} Z`;
 }
@@ -208,14 +213,11 @@ function renderSeasonSlices() {
     path.setAttribute('fill', s.color);
     group.appendChild(path);
 
-    const midFrac = (s.startFrac + s.endFrac) / 2;
-    const midRad  = (Math.PI / 2) + midFrac * 2 * Math.PI;
-    const labelR  = R;
-    const tx = CX + labelR * Math.cos(midRad);
-    const ty = CY + labelR * Math.sin(midRad);
+    const midRad = fracToScreenRad((s.startFrac + s.endFrac) / 2);
+    const tx = CX + R * Math.cos(midRad);
+    const ty = CY + R * Math.sin(midRad);
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', tx);
-    text.setAttribute('y', ty);
+    text.setAttribute('x', tx); text.setAttribute('y', ty);
     text.setAttribute('text-anchor', 'middle');
     text.setAttribute('dominant-baseline', 'middle');
     text.setAttribute('font-size', '9');
@@ -227,17 +229,69 @@ function renderSeasonSlices() {
   }
 
   for (let i = 0; i < 12; i++) {
-    const frac = i / 12;
-    const rad  = (Math.PI / 2) + frac * 2 * Math.PI;
+    const rad = fracToScreenRad(i / 12);
     const r1 = 168, r2 = 202;
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', CX + r1 * Math.cos(rad));
-    line.setAttribute('y1', CY + r1 * Math.sin(rad));
-    line.setAttribute('x2', CX + r2 * Math.cos(rad));
-    line.setAttribute('y2', CY + r2 * Math.sin(rad));
+    line.setAttribute('x1', CX + r1 * Math.cos(rad)); line.setAttribute('y1', CY + r1 * Math.sin(rad));
+    line.setAttribute('x2', CX + r2 * Math.cos(rad)); line.setAttribute('y2', CY + r2 * Math.sin(rad));
     line.setAttribute('stroke', 'rgba(255,255,255,0.15)');
     line.setAttribute('stroke-width', '1');
     group.appendChild(line);
+  }
+}
+
+const NUM_PARTICLES = 240;
+const particles = [];
+
+function initStarParticles() {
+  const svgEl = document.getElementById('orbitSvg');
+  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  group.setAttribute('id', 'starParticles');
+  // Insert galaxy at very start so it's behind everything
+  svgEl.insertBefore(group, svgEl.firstChild);
+
+  for (let i = 0; i < NUM_PARTICLES; i++) {
+    const t = Math.random();
+    const minR = 6;
+    const maxR = R - 24;
+    const orbitR  = minR + (maxR - minR) * (t * t);
+
+    const baseAngle = Math.random() * 2 * Math.PI;
+    // Inner particles move faster (Keplerian differential rotation)
+    const speed = 0.055 * Math.pow(maxR / Math.max(orbitR, 4), 0.65);
+
+    const centreness = 1 - orbitR / maxR;
+    const size = 0.5 + centreness * 2.2 * Math.random();
+
+    const alpha  = (0.12 + 0.7 * centreness * centreness).toFixed(2);
+    const isTeal = Math.random() < 0.18;
+    const col    = isTeal
+      ? `rgba(160,235,235,${alpha})`
+      : `rgba(255,248,220,${alpha})`;
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', Math.max(0.4, size).toFixed(2));
+    circle.setAttribute('fill', col);
+
+    if (Math.random() < 0.25) {
+      const dur   = (1.2 + Math.random() * 3.5).toFixed(1);
+      const delay = (Math.random() * 4).toFixed(1);
+      circle.style.animation = `twinkle ${dur}s ${delay}s ease-in-out infinite`;
+    }
+
+    group.appendChild(circle);
+    particles.push({ el: circle, r: orbitR, baseAngle, speed });
+  }
+}
+
+function updateStarParticles() {
+  const sunRevs  = totalMya / MYA_PER_ORBIT;
+  const sunRad   = sunRevs * 2 * Math.PI;
+
+  for (const p of particles) {
+    const angle = p.baseAngle + sunRad * p.speed;
+    p.el.setAttribute('cx', (CX + p.r * Math.cos(angle)).toFixed(2));
+    p.el.setAttribute('cy', (CY + p.r * Math.sin(angle)).toFixed(2));
   }
 }
 
@@ -429,6 +483,7 @@ document.getElementById('btnNextOrbit').addEventListener('click', () => {
 });
 
 // Init
+initStarParticles();
 drawScrubberMarkers();
 createSeasonToggle();
 createRotationArrow();
