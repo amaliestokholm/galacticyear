@@ -75,7 +75,7 @@ function getActiveMilestone(mya) {
 
 // Galactic year counter: present = 20.44, counts down as we go back
 function getGalacticYear(mya) {
-  return (TOTAL_ORBITS - mya / MYA_PER_ORBIT).toFixed(2);
+  return (TOTAL_ORBITS - mya / MYA_PER_ORBIT).toFixed(1);
 }
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -109,7 +109,7 @@ function renderDisplay() {
   const gyStr    = getGalacticYear(totalMya);
 
   document.getElementById('yearDisplay').textContent = formatMya(totalMya);
-  const galDay = Math.round(((fraction - BIRTH_OF_SUN_SEASON_FRAC + 1) % 1) * 365.25);
+  const galDay = Math.ceil(((fraction - BIRTH_OF_SUN_SEASON_FRAC + 1) % 1) * 365.25);
   const galYear = parseFloat(gyStr);
   const galDate = galDayToDate(galDay, galYear);
   document.getElementById('yearSub').textContent =
