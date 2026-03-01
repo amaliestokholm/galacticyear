@@ -22,8 +22,9 @@ let totalMya         = 0;     // 0 = present, 4600 = birth of Sun
 let isDragging       = false;
 let scrubbing        = false;
 let lastMilestoneKey = null;
+let hasInteracted    = false;
+let showSeasons      = false;
 
-// Maths helpers
 const MYA_PER_ORBIT = GALACTIC_YEAR / 1_000_000; // 225
 
 function getOrbitNumber(mya)   { return Math.floor(mya / MYA_PER_ORBIT); }
@@ -82,8 +83,6 @@ function renderDisplay() {
   // Sub-label: orbit position
   document.getElementById('yearSub').textContent =
     `Galactic year ${20 -orbit}, Galactic day ${(fraction * 365.25).toFixed(0)}`;
-
-  // Orbit badge
   document.getElementById('orbitCounter').textContent = `Orbit ${orbit + 1} / 20`;
 
   // Total progress bar
@@ -121,14 +120,23 @@ function renderDisplay() {
   }
 }
 
-function render() { renderOrbit(); renderDisplay(); }
+function render() {
+	renderOrbit();
+	renderDisplay();
+	drawTicks();
+	renderSeasonSlices();
+}
 
 // SVG tick marks (per-orbit milestones)
 function drawTicks() {
   const tickGroup = document.getElementById('milestoneTicks');
   tickGroup.innerHTML = '';
+  const currentOrbit = getOrbitNumber(totalMya);
 
   for (const m of MILESTONES) {
+    const milestoneOrbit = getOrbitNumber(m.mya);
+    if (milestoneOrbit !== currentOrbit) continue;
+
     const posInOrbit = m.mya % MYA_PER_ORBIT;
     const frac = posInOrbit / MYA_PER_ORBIT;
     const deg  = (180 + frac * 360) % 360;
@@ -141,7 +149,7 @@ function drawTicks() {
     line.setAttribute('x2', CX + outer * Math.cos(rad));
     line.setAttribute('y2', CY + outer * Math.sin(rad));
     line.setAttribute('stroke', 'rgba(201,168,76,0.3)');
-    line.setAttribute('stroke-width', '5');
+    line.setAttribute('stroke-width', '2');
     tickGroup.appendChild(line);
   }
 }
@@ -159,6 +167,163 @@ function drawScrubberMarkers() {
     mark.addEventListener('click', () => animateTo(m.mya));
     container.appendChild(mark);
   }
+}
+
+// Season/months
+const SEASONS = [
+  { name: 'Spring', color: 'rgba(120,210,120,0.13)', startFrac: 0,    endFrac: 0.25 },
+  { name: 'Summer', color: 'rgba(255,200,60,0.13)',  startFrac: 0.25, endFrac: 0.50 },
+  { name: 'Autumn', color: 'rgba(210,120,50,0.13)',  startFrac: 0.50, endFrac: 0.75 },
+  { name: 'Winter', color: 'rgba(100,180,240,0.13)', startFrac: 0.75, endFrac: 1.00 },
+];
+
+function arcPath(startFrac, endFrac) {
+  // Orbit starts at bottom (180deg offset), goes CW
+  // startFrac 0 = bottom of circle
+  function fracToRad(f) { return (Math.PI / 2) + f * 2 * Math.PI; } // bottom = π/2
+  const r1 = 168, r2 = 202; // inner/outer radius for the wedge band
+
+  const sa = fracToRad(startFrac);
+  const ea = fracToRad(endFrac);
+
+  const x1o = CX + r2 * Math.cos(sa), y1o = CY + r2 * Math.sin(sa);
+  const x2o = CX + r2 * Math.cos(ea), y2o = CY + r2 * Math.sin(ea);
+  const x1i = CX + r1 * Math.cos(ea), y1i = CY + r1 * Math.sin(ea);
+  const x2i = CX + r1 * Math.cos(sa), y2i = CY + r1 * Math.sin(sa);
+
+  const large = (endFrac - startFrac) > 0.5 ? 1 : 0;
+  return `M ${x1o} ${y1o} A ${r2} ${r2} 0 ${large} 1 ${x2o} ${y2o} L ${x1i} ${y1i} A ${r1} ${r1} 0 ${large} 0 ${x2i} ${y2i} Z`;
+}
+
+function renderSeasonSlices() {
+  const group = document.getElementById('seasonSlices');
+  group.innerHTML = '';
+  if (!showSeasons) return;
+
+  // Month dividers (12 lines) and season fills
+  for (const s of SEASONS) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', arcPath(s.startFrac, s.endFrac));
+    path.setAttribute('fill', s.color);
+    group.appendChild(path);
+
+    const midFrac = (s.startFrac + s.endFrac) / 2;
+    const midRad  = (Math.PI / 2) + midFrac * 2 * Math.PI;
+    const labelR  = R;
+    const tx = CX + labelR * Math.cos(midRad);
+    const ty = CY + labelR * Math.sin(midRad);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', tx);
+    text.setAttribute('y', ty);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('font-size', '9');
+    text.setAttribute('fill', 'rgba(255,255,255,0.35)');
+    text.setAttribute('font-family', 'Montserrat, sans-serif');
+    text.setAttribute('letter-spacing', '0.08em');
+    text.textContent = s.name.toUpperCase();
+    group.appendChild(text);
+  }
+
+  for (let i = 0; i < 12; i++) {
+    const frac = i / 12;
+    const rad  = (Math.PI / 2) + frac * 2 * Math.PI;
+    const r1 = 168, r2 = 202;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', CX + r1 * Math.cos(rad));
+    line.setAttribute('y1', CY + r1 * Math.sin(rad));
+    line.setAttribute('x2', CX + r2 * Math.cos(rad));
+    line.setAttribute('y2', CY + r2 * Math.sin(rad));
+    line.setAttribute('stroke', 'rgba(255,255,255,0.15)');
+    line.setAttribute('stroke-width', '1');
+    group.appendChild(line);
+  }
+}
+
+function createRotationArrow() {
+  const svg = document.getElementById('orbitSvg');
+  const g   = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('id', 'rotationArrow');
+
+const arrowAngleDeg = 90; // 3 o clock
+  const arrowRad      = (arrowAngleDeg - 90) * Math.PI / 180;
+  const ax = CX + R * Math.cos(arrowRad);
+  const ay = CY + R * Math.sin(arrowRad);
+
+const delta = 22 * Math.PI / 180; // span in radians
+  const r1rad = arrowRad - delta;
+  const r2rad = arrowRad + delta;
+  const x1 = CX + (R + 18) * Math.cos(r1rad);
+  const y1 = CY + (R + 18) * Math.sin(r1rad);
+  const x2 = CX + (R + 18) * Math.cos(r2rad);
+  const y2 = CY + (R + 18) * Math.sin(r2rad);
+
+
+  const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  arc.setAttribute('d', `M ${x1} ${y1} A ${R + 18} ${R + 18} 0 0 1 ${x2} ${y2}`);
+  arc.setAttribute('fill', 'none');
+  arc.setAttribute('stroke', 'rgba(240,208,128,0.8)');
+  arc.setAttribute('stroke-width', '2');
+  arc.setAttribute('stroke-linecap', 'round');
+
+  // Arrowhead at end
+  const headAngle = Math.atan2(y2 - (CY + (R + 18) * Math.sin(r2rad - 0.01)), x2 - (CX + (R + 18) * Math.cos(r2rad - 0.01)));
+  const hw = 7;
+  const ah = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  // Simple triangle arrowhead
+  const tip   = `${x2},${y2}`;
+  const left  = `${x2 - hw * Math.cos(headAngle - 0.5)},${y2 - hw * Math.sin(headAngle - 0.5)}`;
+  const right = `${x2 - hw * Math.cos(headAngle + 0.5)},${y2 - hw * Math.sin(headAngle + 0.5)}`;
+  ah.setAttribute('points', `${tip} ${left} ${right}`);
+  ah.setAttribute('fill', 'rgba(240,208,128,0.8)');
+
+
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', ax + 28);
+  label.setAttribute('y', ay - 10);
+  label.setAttribute('font-size', '9');
+  label.setAttribute('fill', 'rgba(240,208,128,0.8)');
+  label.setAttribute('font-family', 'Montserrat, sans-serif');
+  label.setAttribute('letter-spacing', '0.18em');
+  label.textContent = 'DRAG';
+
+  g.appendChild(arc);
+  g.appendChild(ah);
+  g.appendChild(label);
+
+  g.style.transition = 'opacity 0.8s ease';
+  g.style.opacity  = '1';
+
+const handle = document.getElementById('handle');
+  svg.insertBefore(g, handle);
+}
+
+function fadeArrow() {
+  if (hasInteracted) return;
+  hasInteracted = true;
+  const arrow = document.getElementById('rotationArrow');
+  if (arrow) {
+    arrow.style.opacity = '0';
+    setTimeout(() => arrow.remove(), 900);
+  }
+}
+
+function createSeasonToggle() {
+  const wrap = document.querySelector('.scrubber-wrap');
+  const div  = document.createElement('div');
+  div.className = 'season-toggle-row';
+  div.innerHTML = `
+    <label class="season-toggle-label">
+      <input type="checkbox" id="seasonToggle" />
+      <span class="season-toggle-box"></span>
+      Show Galactic months &amp; seasons
+    </label>`;
+  wrap.appendChild(div);
+
+  document.getElementById('seasonToggle').addEventListener('change', (e) => {
+    showSeasons = e.target.checked;
+    render();
+  });
 }
 
 // Smooth animation
@@ -197,6 +362,7 @@ svg.addEventListener('pointerdown', (e) => {
     isDragging = true;
     svg.setPointerCapture(e.pointerId);
     e.preventDefault();
+    fadeArrow();
     const myaInOrbit = angleToMyaInOrbit(screenPointToAngle(e.clientX, e.clientY));
     totalMya = Math.max(0, Math.min(SUN_AGE_MYA, getOrbitNumber(totalMya) * MYA_PER_ORBIT + myaInOrbit));
     render();
@@ -207,7 +373,10 @@ svg.addEventListener('pointermove', (e) => {
   if (!isDragging) return;
   e.preventDefault();
   const myaInOrbit = angleToMyaInOrbit(screenPointToAngle(e.clientX, e.clientY));
-  totalMya = Math.max(0, Math.min(SUN_AGE_MYA, getOrbitNumber(totalMya) * MYA_PER_ORBIT + myaInOrbit));
+  // Fix that you cannot 'go to future'
+  const orbitBase = getOrbitNumber(totalMya) * MYA_PER_ORBIT;
+  const newMya    = Math.max(0, Math.min(SUN_AGE_MYA, orbitBase + myaInOrbit));
+  totalMya = newMya;
   render();
 });
 
@@ -253,11 +422,12 @@ document.getElementById('btnNextOrbit').addEventListener('click', () => {
 });
 
 // Init
-drawTicks();
 drawScrubberMarkers();
+createSeasonToggle();
+createRotationArrow();
 render();
 
 setTimeout(() => {
   document.getElementById('milestoneContainer').innerHTML =
-    `<p class="no-milestone">Drag the Sun around its orbit to explore what happened this Galactic year. Or scroll through the timeline below to travel through the entire life of the Sun. </p>`;
+    `<p class="no-milestone">Drag the Sun around its orbit to explore what happened this Galactic year.</p>`;
 }, 50);

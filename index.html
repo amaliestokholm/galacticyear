@@ -234,7 +234,7 @@
   }
 
   .no-milestone {
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     color: var(--dim);
     font-style: italic;
     margin-top: 16px;
@@ -246,7 +246,6 @@
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    font-family: 'Cinzel', serif;
     font-size: 0.85em;
     letter-spacing: 0.18em;
     color: var(--teal);
@@ -298,6 +297,7 @@
     width: 100%;
     max-width: 460px;
     padding: 0 2px;
+    position: relative; z-index: 10;
   }
 
   .scrubber-label-row {
@@ -377,6 +377,46 @@
     pointer-events: none;
   }
 
+  .season-toggle-row {
+    margin-top: 14px;
+  }
+
+  .season-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    color: var(--dim);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .season-toggle-label input[type="checkbox"] {
+    display: none;
+  }
+
+  .season-toggle-box {
+    width: 14px; height: 14px;
+    border: 1px solid rgba(201,168,76,0.4);
+    background: rgba(201,168,76,0.06);
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .season-toggle-label input:checked + .season-toggle-box {
+    background: rgba(201,168,76,0.25);
+    border-color: var(--gold);
+  }
+
+  .season-toggle-label input:checked + .season-toggle-box::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--gold);
+  }
+
   footer {
     position: relative; z-index: 10;
     text-align: center;
@@ -393,12 +433,18 @@
 
 <header>
   <h1>A Galactic Year</h1>
-  <h2>What happened on planet Earth</h2>
-  <h2>while our Sun made a round around the Milky Way?</h2>
-  <h2>  Galactic time scales are rather different from the ones we know from Earth; Drag the Sun around its orbit;</h2>
 </header>
 
+
+<div class="intro-panel">
+  <p>Galactic time scales are much longer than human time scales. Here is one way to illustrate it:</p>
+  <p>On Earth, we define a <strong>year</strong> as the time that passes when the Earth completes one full orbit around our star, the Sun.</p>
+  <p>Similarly, we can define a <strong>Galactic year</strong> as the time that passes when the Sun completes a full orbit around the centre of our galaxy, the Milky Way.</p>
+  <p>Below you see the Milky Way galaxy from the top-down, as if you are looking at it from the outside. The <strong>yellow dot</strong> represents our Sun and solar system. <strong>Drag it around its orbit</strong> to move back in time and explore what happened on Earth at each point along its journey through time and space.</p>
+</div>
+
 <div class="main-layout">
+  <div class="orbit-col">
   <div class="orbit-wrapper">
     <div class="galaxy-core"></div>
     <div class="orbit-badge" id="orbitCounter">Orbit 1 / 20</div>
@@ -409,6 +455,8 @@
           <stop offset="100%" stop-color="#c9a84c"/>
         </linearGradient>
       </defs>
+
+      <g id="seasonSlices"></g>
 
       <circle cx="230" cy="230" r="185" fill="none" stroke="rgba(79,195,195,0.12)" stroke-width="1"/>
       <circle cx="230" cy="230" r="185" fill="none" stroke="rgba(79,195,195,0.06)" stroke-width="16"/>
@@ -425,6 +473,7 @@
       />
 
       <g id="milestoneTicks"></g>
+
       <g id="handle" class="handle">
         <circle r="14" fill="rgba(240,208,128,0.15)" stroke="rgba(240,208,128,0.3)" stroke-width="1"/>
         <circle r="7" fill="#f0d080"/>
@@ -433,20 +482,26 @@
     </svg>
   </div>
 
+  <div class="orbit-nav">
+    <button id="btnPrevOrbit">&#8592; Previous orbit</button>
+    <span class="orbit-nav-label">Jump one Galactic year</span>
+    <button id="btnNextOrbit">Next orbit &#8594;</button>
+  </div>
+  </div>
+
+  <div class="info-col">
   <div class="display-panel">
     <div class="year-label">Years ago on planet Earth</div>
     <div class="year-display" id="yearDisplay">0</div>
     <div class="year-sub" id="yearSub">Present day</div>
     <div id="milestoneContainer"></div>
   </div>
-
-  <div class="orbit-nav">
-    <button id="btnPrevOrbit">&#8592; Previous orbit</button>
-    <span class="orbit-nav-label">Jump one Galactic year</span>
-    <button id="btnNextOrbit">Next orbit &#8594;</button>
   </div>
 
-  <div class="scrubber-wrap">
+  </div>
+
+
+  <div class="scrubber-wrap" style="max-width:940px;padding:0 20px;">
     <div class="scrubber-label-row">
       <span>Present</span>
       <span>Birth of Sun</span>
@@ -458,8 +513,6 @@
       <div class="scrubber-thumb" id="scrubberThumb" style="left:0%"></div>
     </div>
   </div>
-
-</div>
 
 <footer>
 Data is approximate; Dr. Amalie Stokholm, a.strova.dk
