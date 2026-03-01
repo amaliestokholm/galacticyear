@@ -11,7 +11,8 @@ const TOTAL_ORBITS     = SUN_AGE_MYA / (GALACTIC_YEAR / 1_000_000); // ~20.44
 // Season layout: Spring 0–0.25, Summer 0.25–0.5, Autumn 0.5–0.75, Winter 0.75–1.0
 // 2nd month of Winter = month 11 of 12 = orbit fraction 10/12 = 0.8333
 // If 0.8333 should be on top: 1- 0.8333 = 0.1667
-const PHASE_OFFSET = 0.1667;
+const BIRTH_OF_SUN_SEASON_FRAC = 100 / 225;
+const PHASE_OFFSET = (1 - BIRTH_OF_SUN_SEASON_FRAC) % 1;
 
 // SVG coordinate constants (viewBox is 0 0 460 460)
 const CX = 230, CY = 230, R = 185;
@@ -95,8 +96,9 @@ function renderDisplay() {
   const gyStr    = getGalacticYear(totalMya);
 
   document.getElementById('yearDisplay').textContent = formatMya(totalMya);
+  const galDay = Math.round(((fraction - BIRTH_OF_SUN_SEASON_FRAC + 1) % 1) * 365.25);
   document.getElementById('yearSub').textContent =
-    `Galactic year ${gyStr}, Galactic day ${Math.round(fraction * 365.25)}`;
+    `Galactic year ${gyStr}, Galactic day ${galDay}`;
   document.getElementById('orbitCounter').textContent = `Year ${gyStr}`;
 
   // Total progress bar
