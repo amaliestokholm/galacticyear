@@ -237,7 +237,7 @@ function renderSeasonSlices() {
   }
 }
 
-const NUM_PARTICLES = 240;
+const NUM_PARTICLES = 480;
 const particles = [];
 
 function initStarParticles() {
@@ -250,7 +250,7 @@ function initStarParticles() {
   for (let i = 0; i < NUM_PARTICLES; i++) {
     const t = Math.random();
     const minR = 6;
-    const maxR = R - 24;
+    const maxR = 1.9 * R;
     const orbitR  = minR + (maxR - minR) * (t * t);
 
     const baseAngle = Math.random() * 2 * Math.PI;
