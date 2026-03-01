@@ -78,6 +78,19 @@ function getGalacticYear(mya) {
   return (TOTAL_ORBITS - mya / MYA_PER_ORBIT).toFixed(2);
 }
 
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function galDayToDate(galDay, galYear) {
+  const leapYear   = Math.round(galYear) % 4 === 0;
+  const febDays    = leapYear ? 29 : 28;
+  const monthLengths = [31, febDays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let remaining = Math.floor(galDay);
+  for (let m = 0; m < 12; m++) {
+    if (remaining < monthLengths[m]) return `${MONTH_NAMES[m]} ${remaining + 1}`;
+    remaining -= monthLengths[m];
+  }
+  return 'Apr 1';
+}
+
 // Rendering
 function renderOrbit() {
   const deg      = myaToAngle(totalMya);
@@ -97,8 +110,10 @@ function renderDisplay() {
 
   document.getElementById('yearDisplay').textContent = formatMya(totalMya);
   const galDay = Math.round(((fraction - BIRTH_OF_SUN_SEASON_FRAC + 1) % 1) * 365.25);
+  const galYear = parseFloat(gyStr);
+  const galDate = galDayToDate(galDay, galYear);
   document.getElementById('yearSub').textContent =
-    `Galactic year ${gyStr}, Galactic day ${galDay}`;
+    `Galactic year ${galYear.toFixed(0)}, ${galDate} (day ${galDay})`;
   document.getElementById('orbitCounter').textContent = `Year ${gyStr}`;
 
   // Total progress bar
