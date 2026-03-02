@@ -428,6 +428,44 @@
     background: var(--gold);
   }
 
+  .birthday-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .birthday-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+  }
+
+  .birthday-select, .birthday-day-input {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 4px 8px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+  }
+
+  .birthday-select:focus, .birthday-day-input:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.12);
+  }
+
+  .birthday-day-input {
+    width: 54px;
+    text-align: center;
+  }
+
   footer {
     position: relative; z-index: 10;
     text-align: center;
@@ -480,7 +518,6 @@
         stroke-linecap="round"
         stroke-dasharray="1163"
         stroke-dashoffset="1163"
-        transform="rotate(90 230 230)"
       />
 
       <g id="milestoneTicks"></g>
