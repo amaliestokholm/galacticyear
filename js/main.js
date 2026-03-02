@@ -181,7 +181,7 @@ icon: '🐠'
   },
   { mya: 0,
     era: 'Quaternary', title: 'Present Day',
-    desc: "You are here. <br><br>Much of the history you know happen essentially in these few Galactic days. <br><br>Humans controlling fire, beginning farming and domesticating animals, building great monuments such as the Great Pyramids and Stonehenge, invention of the printing press and humans leaving the Earth and walking on the Moon. ",
+    desc: "You are here. <br>Almost all the history you know has unfolded within just a few Galactic days. <br><br>Humans learned to harness fire, began farming, constructed monumental wonders like the Great Pyramids and Stonehenge, invented the printing press, and eventually left Earth to walk on the Moon.",
     icon: '🌍'
   }
 ];
@@ -291,7 +291,7 @@ function renderDisplay() {
     }
   } else {
     if (lastMilestoneKey !== null) {
-      container.innerHTML = `<p class="no-milestone">Drag the Sun around its orbit to explore what happened this Galactic year. Or scroll through the timeline below to travel through the entire life of the Sun. </p>`;
+      container.innerHTML = `<p class="no-milestone">Drag the Sun around its orbit to explore what happened this Galactic year. <br><br>Or scroll through the timeline below to travel through the entire life of the Sun. </p>`;
       lastMilestoneKey = null;
     }
   }
