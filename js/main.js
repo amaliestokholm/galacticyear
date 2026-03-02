@@ -373,10 +373,10 @@ function renderSeasonSlices() {
   group.innerHTML = '';
   if (!showSeasons) return;
 
-  const W = 'rgba(100,180,240,0.13)';
-  const Sp = 'rgba(120,210,120,0.13)';
-  const Su = 'rgba(255,200,60,0.13)';
-  const A  = 'rgba(210,120,50,0.13)';
+  const W = 'rgba(100,180,240,0.33)';
+  const Sp = 'rgba(120,210,120,0.33)';
+  const Su = 'rgba(255,200,60,0.33)';
+  const A  = 'rgba(210,120,50,0.33)';
 
   // Winter is split at the year boundary: Dec (11/12–1) + Jan–Feb (0–2/12)
   drawAnnularArc(group, 11/12, 1,     W);
