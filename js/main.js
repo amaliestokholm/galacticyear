@@ -54,10 +54,136 @@ function screenPointToAngle(cx, cy) {
 function orbitFracToMyaInOrbit(frac) { return frac * MYA_PER_ORBIT; }
 
 const MILESTONES = [
-  { mya: 0, era: 'Quaternary', title: 'Present Day', desc: 'You are here.', icon: '🌍' },
-  { mya: 0.3, era: 'Quaternary', title: 'Ice Ages & Homo sapiens', desc: 'Modern humans emerges. Repeated glaciations reshape continents. Woolly mammoths wander around Eurasia.', icon: '🧊' },
-  { mya: 4500, era: 'Hadean', title: 'Earth & Moon Form', desc: 'A Mars-sized planet named Theia collides with the early planet Earth. The debris forms the Moon. Earth is a hellscape of molten rock and toxic gases.', icon: '🌑'},
-  { mya: 4600, era: 'Solar Nebula', title: 'Birth of the Sun', desc: "A cloud of gas and dust collapses under its own gravity. The Sun ignites. This is orbit zero and thus the very beginning of our solar system's Galactic journey.", icon: '☀️' },
+  { mya: 4600,
+    era: 'Solar Nebula', title: 'Birth of the Sun',
+    desc: "A giant cloud of gas and dust collapses under its own gravity.<br><br> At its center, the Sun ignites. <br><br>Around it, leftover debris begins clumping together. This debris will contain the raw ingredients of planets, moons, asteroids, and eventually us.",
+    icon: '☀️'
+  },
+  { mya: 4500,
+    era: 'Hadean', title: 'Earth & Moon Form',
+    desc: "A Mars-sized planet slams into the young Earth. The collision melts the surface into a global ocean of lava.<br><br>Debris from this impact gathers in orbit around the Earth and forms the Moon. Earth is a violent, glowing world of fire and molten rock with toxic skies.",
+    icon: '🌑'
+  },
+  { mya: 4100,
+    era: 'Hadean', title: 'Late Heavy Bombardment',
+    desc: "For hundreds of millions of years, a wave of asteroids and comets rain down on the inner solar system, scarring their surfaces. This is how the Moon got its craters. Earth is also repeatedly struck.<br><br> These heavy impacts may have been the way water and organic building blocks for future life found their way to Earth.",
+    icon: '💥'
+  },
+  { mya: 3800,
+    era: 'Archean', title: 'Life Emerges',
+    desc: "Somewhere in Earth’s early oceans, simple single-celled life appears. These tiny microbes survive in extreme environments such as near volcanic vents or in shallow seas.<br><br> Life begins quietly.",
+    icon: '🧫'
+  },
+  { mya: 3500,
+    era: 'Archean', title: 'Early Microbial Worlds',
+    desc: "Microbes dominate the planet. Some build layered roch structures called stromatolites, which we can still see on Earth today. <br><br>The world at this time has no plants, no animals, no oxygen in the atmosphere to breathe. <br><br>But slowly, microscopic life are reshaping the planet.",
+    icon: '🪨'
+  },
+  { mya: 2400,
+    era: 'Proterozoic', title: 'Oxygen in the Sky',
+    desc: "Microbes begin photosynthesis and they therefore release oxygen as waste. At first it reacts with iron in the oceans, turning them rusty red. <br><br>Eventually oxygen builds up in the atmosphere. The oxygen-filled atmosphere is toxic to many early lifeforms but it paves the way for life as we know it.",
+    icon: '🫧'
+  },
+  { mya: 720,
+    era: 'Proterozoic', title: 'Snowball Earth',
+    desc: "Ice spreads from the poles toward the equator. Icy glaciers may cover nearly the entire planet. Earth becomes a frozen white world seen from space. <br><br>Life survives in the oceans beneath the ice, waiting for warmth to return.",
+    icon: '❄️'
+  },
+  { mya: 600,
+    era: 'Proterozoic', title: 'First Multicellular Life',
+    desc: "Strange, soft-bodied organisms appear in the oceans. For the first time, life grows large enough that we could see it without a microscope. <br><br>The stage is set for animals.",
+    icon: '🧬'
+  },
+  { mya: 541,
+    era: 'Paleozoic', title: 'Cambrian Explosion',
+    desc: "Life diversifies at breathtaking speed. Oceans fill with armored creatures, early arthropods, and bizarre predators. <br><br>Most major animal body plans appear during this evolutionary burst.",
+    icon: '🐚'
+  },
+  { mya: 470,
+    era: 'Paleozoic', title: 'Plants Conquer the Land',
+    desc: "Simple plants creep onto land, hugging moist shorelines. Over time they transform barren rock into soil and begin pulling carbon dioxide from the atmosphere. <br><br>The continents slowly turn green.",
+    icon: '🌱'
+  },
+  { mya: 444,
+    era: 'Paleozoic', title: 'Late Ordovician Mass Extinction',
+    desc: "A sudden ice age locks up water in glaciers and sea levels drop dramatically. <br><br>Around 85% of marine species disappear, making it the second largest-known extinction event. <br><br>Life in the oceans is reshaped.",
+    icon: '🌊'
+  },
+  { mya: 375,
+    era: 'Paleozoic', title: 'Life Crawls Onto Land',
+    desc: "Lobe-finned fish evolve sturdy, limb-like fins. Bony fish with cleaver-shaped fins starts to use their limbs to explore the muddy shorelines. <br><br>Vertebrate life is no longer confined to water.",
+    icon: '🐟'
+  },
+{ mya: 372,
+era: 'Paleozoic', title: 'Late Devonian Extinction',
+desc: "Over millions of years, ecosystems collapse in waves. Many reef-builders and armored fish vanish. <br><br>The seas are permanently changed.",
+icon: '🐠'
+},
+  { mya: 335,
+    era: 'Paleozoic', title: 'Pangaea Forms',
+    desc: "All major continents collide into a single vast supercontinent: Pangaea. <br><br>The inner-part of the continent becomes dry and extreme, while enormous mountain ranges rise from continental collisions.",
+    icon: '🗺️'
+  },
+  { mya: 320,
+    era: 'Paleozoic', title: 'First Reptiles',
+    desc: "A key innovation appears: the egg. <br><br>Reptiles can now reproduce without returning to water. This breakthrough will eventually lead to dinosaurs, birds, and mammals.",
+    icon: '🥚'
+  },
+  { mya: 252,
+    era: 'Paleozoic', title: 'Permian Mass Extinction',
+    desc: "Massive volcanic eruptions trigger climate chaos. Around 90% of marine species and 70% of land species vanish. <br><br>It is the most devastating extinction event in Earth’s history.",
+    icon: '☠️'
+  },
+  { mya: 230,
+    era: 'Mesozoic', title: 'Rise of the Dinosaurs',
+    desc: "Small, fast dinosaurs appear during the Triassic. Over time they grow into giants. <br><br>Early forms set the stage for famous later species like Tyrannosaurus, Triceratops, and Stegosaurus.",
+    icon: '🦖'
+  },
+  { mya: 201,
+    era: 'Mesozoic', title: 'Triassic–Jurassic Extinction',
+    desc: "Another mass extinction wipes out many competitors. <br><br>Dinosaurs survive and soon they dominate the planet.",
+    icon: '🌋'
+  },
+  { mya: 150,
+    era: 'Mesozoic', title: 'Age of Giants',
+    desc: "The Jurassic world is lush and warm. <br><br>Enormous sauropods like Diplodocus and Brachiosaurus roam in herds. Stegosaurus grazes low plants, while Allosaurus hunts as a top predator.",
+    icon: '🦕'
+  },
+  { mya: 100,
+    era: 'Mesozoic', title: 'Cretaceous Diversity',
+    desc: "Flowering plants spread across the globe. <br><br>Iconic dinosaurs appear: Tyrannosaurus rex stalks prey, Triceratops defends itself with horns, and Velociraptor hunts in packs.",
+    icon: '🌺'
+  },
+  { mya: 66,
+    era: 'Cenozoic', title: 'Asteroid Impact',
+    desc: "A massive asteroid strikes near modern-day Mexico on the Yucatán Peninsula. <br><br>Firestorms, darkness, and global cooling follow. <br><br>Non-avian dinosaurs disappear. Their descendants birds survive.",
+    icon: '☄️'
+  },
+  { mya: 55,
+    era: 'Cenozoic', title: 'Age of Mammals',
+    desc: "With dinosaurs gone, mammals rapidly diversify. <br><br>Some grow large, some stay small. Forests spread across the land. Early primates swing through the trees.",
+    icon: '🐒'
+  },
+  { mya: 7,
+    era: 'Neogene', title: 'Human–Chimp Ancestor',
+    desc: "In Africa, a population of apes lives that will eventually split into two lineages. <br><br>One of them lead to chimpanzees, the other to humans.",
+    icon: '🧍'
+  },
+  { mya: 2.6,
+    era: 'Quaternary', title: 'Stone Age Begins',
+    desc: "Early humans begin shaping stone tools in a widespread and lasting way. <br><br>Ice ages come and go. Large mammals like mammoths roam the northern continents.",
+    icon: '🪨'
+  },
+  { mya: 0.3,
+    era: 'Quaternary', title: 'Homo sapiens',
+    desc: "Modern humans evolve in Africa. <br><br>Over tens of thousands of years they spread across the globe, adapting to deserts, forests, and frozen tundra.",
+    icon: '🧊'
+  },
+  { mya: 0,
+    era: 'Quaternary', title: 'Present Day',
+    desc: "You are here. <br><br>Much of the history you know happen essentially in these few Galactic days. <br><br>Humans controlling fire, beginning farming and domesticating animals, building great monuments such as the Great Pyramids and Stonehenge, invention of the printing press and humans leaving the Earth and walking on the Moon. ",
+    icon: '🌍'
+  }
 ];
 
 // State
@@ -183,11 +309,13 @@ function render() {
 function drawTicks() {
   const tickGroup = document.getElementById('milestoneTicks');
   tickGroup.innerHTML = '';
-  const currentOrbit = getOrbitNumber(totalMya);
+  // const currentOrbit = getOrbitNumber(totalMya);
+  const gyStr = getGalacticYear(totalMya);
+  const galYear = parseFloat(gyStr);
 
   for (const m of MILESTONES) {
-    if (getOrbitNumber(m.mya) !== currentOrbit) continue;
-    const rad   = fracToScreenRad(getOrbitFraction(m.mya));
+    if (getGalacticYear(m.mya) !== galYear) continue;
+    const rad = fracToScreenRad(getOrbitFraction(m.mya));
     const inner = R - 10, outer = R + 10;
 
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -308,8 +436,8 @@ function initStarParticles() {
   for (let i = 0; i < NUM_PARTICLES; i++) {
     const t = Math.random();
     const minR = 6;
-    const maxR = 1.9 * R;
-    const orbitR = minR + (maxR - minR) * (t * t);
+    const maxR = 3 * R;
+    const orbitR = minR + (maxR - minR) * t * t;
 
     const baseAngle = Math.random() * 2 * Math.PI;
     // Inner particles move faster (Keplerian differential rotation)
