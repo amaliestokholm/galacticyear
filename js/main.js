@@ -92,12 +92,12 @@ function getActiveMilestone(mya) {
 
 // Galactic year counter: present = 20.44, counts down as we go back
 function getGalacticYear(mya) {
-  return (TOTAL_ORBITS - mya / MYA_PER_ORBIT).toFixed(1);
+  return Math.floor(TOTAL_ORBITS - mya / MYA_PER_ORBIT);
 }
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 function galDayToDate(galDay, galYear) {
-  const leapYear = galYear % 4 === 0;
+  const leapYear = Math.floor(galYear) % 4 === 0;
   const febDays = leapYear ? 29 : 28;
   const monthLengths = [31, febDays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   let remaining = galDay - 1;
@@ -129,11 +129,13 @@ function renderDisplay() {
   document.getElementById('yearDisplay').textContent = formatMya(totalMya);
 
   const rawFrac = orbitFracToCalFrac(fraction);
-  const galDay = Math.floor(rawFrac * 365.25) + 1;
   const galYear = parseFloat(gyStr);
+  const leapYear = Math.floor(galYear) % 4 === 0;
+  const daysInYear = leapYear ? 366 : 365;
+  const galDay = Math.floor(rawFrac * daysInYear) + 1;
   const galDate = galDayToDate(galDay, galYear);
   document.getElementById('yearSub').textContent =
-    `Galactic year ${galYear.toFixed(0)}, ${galDate} (day ${galDay})`;
+    `Galactic year ${Math.floor(galYear)}, ${galDate} (day ${galDay})`;
   document.getElementById('orbitCounter').textContent = `Year ${gyStr}`;
 
   // Total progress bar
@@ -339,7 +341,7 @@ function initStarParticles() {
 
 function updateStarParticles() {
   const sunRevs = totalMya / MYA_PER_ORBIT;
-  const sunRad = sunRevs * 2 * Math.PI;
+  const sunRad = -sunRevs * 2 * Math.PI;
 
   for (const p of particles) {
     const angle = p.baseAngle + sunRad * p.speed;
@@ -440,12 +442,12 @@ function createSeasonToggle() {
   function updateBirthday() {
     const month = parseInt(document.getElementById('birthdayMonth').value);
     const day = Math.max(1, Math.min(31, parseInt(document.getElementById('birthdayDay').value) || 1));
-    const galYear = Math.round(TOTAL_ORBITS - totalMya / MYA_PER_ORBIT);
+    const galYear = Math.floor(TOTAL_ORBITS - totalMya / MYA_PER_ORBIT);
     const leapYear = galYear % 4 === 0;
     const febDays = leapYear ? 29 : 28;
     const monthLengths = [31, febDays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let dayOfYear = monthLengths.slice(0, month).reduce((a,b) => a+b, 0) + (day - 1);
-    sunBirthdayFrac = (dayOfYear / (leapYear ? 366 : 365.25));
+    sunBirthdayFrac = (dayOfYear / (leapYear ? 366 : 365));
     render();
   }
 
