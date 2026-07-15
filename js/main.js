@@ -56,17 +56,17 @@ function orbitFracToMyaInOrbit(frac) { return frac * MYA_PER_ORBIT; }
 const MILESTONES = [
   { mya: 4600,
     era: 'Solar Nebula', title: 'Birth of the Sun',
-    desc: "A giant cloud of gas and dust collapses under its own gravity.<br><br> At its center, the Sun ignites. <br><br>Around it, leftover debris begins clumping together. This debris will contain the raw ingredients of planets, moons, asteroids, and eventually us.",
+    desc: "The Sun is born from a giant cloud of gas and dust, which collapses under its own gravity.<br><br> Around it, leftover debris begins to clump together. This debris contains the raw ingredients of planets, moons, asteroids, and eventually us.",
     icon: '☀️'
   },
   { mya: 4500,
     era: 'Hadean', title: 'Earth & Moon Form',
-    desc: "A Mars-sized planet slams into the young Earth. The collision melts the surface into a global ocean of lava.<br><br>Debris from this impact gathers in orbit around the Earth and forms the Moon. Earth is a violent, glowing world of fire and molten rock with toxic skies.",
+    desc: "A Mars-sized planet slams into the young planet Earth. The collision melts the surface into a global ocean of lava.<br><br>Debris from this impact gathers in orbit around the Earth and forms the Moon. Earth is a violent, glowing world of fire and molten rock with toxic skies.",
     icon: '🌑'
   },
   { mya: 4100,
     era: 'Hadean', title: 'Late Heavy Bombardment',
-    desc: "For hundreds of millions of years, a wave of asteroids and comets rain down on the inner solar system, scarring their surfaces. This is how the Moon got its craters. Earth is also repeatedly struck.<br><br> These heavy impacts may have been the way water and organic building blocks for future life found their way to Earth.",
+    desc: "For hundreds of millions of years, a wave of asteroids and comets rain down on the inner solar system, scarring their surfaces. This is how the Moon got many of the craters we still see today. Earth is also repeatedly struck.<br><br> These heavy impacts may have been how water and organic building blocks for future life found their way to Earth.",
     icon: '💥'
   },
   { mya: 3800,
@@ -181,7 +181,7 @@ icon: '🐠'
   },
   { mya: 0,
     era: 'Quaternary', title: 'Present Day',
-    desc: "You are here. <br>Almost all the history you know has unfolded within just a few Galactic days. <br><br>Humans learned to harness fire, began farming, constructed monumental wonders like the Great Pyramids and Stonehenge, invented the printing press, and eventually left Earth to walk on the Moon.",
+    desc: "You are here. <br>Humans and almost all the history you know unfolded within just a few Galactic days. <br><br>Humans learned to harness fire, began farming, constructed wonders like the Great Pyramids, invented the printing press, and so on.<br><br> Eventually humans left Earth to walk on the Moon.",
     icon: '🌍'
   }
 ];
