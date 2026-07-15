@@ -423,7 +423,7 @@ function renderSeasonSlices() {
   }
 }
 
-const NUM_PARTICLES = 480;
+const NUM_PARTICLES = 1024;
 const particles = [];
 
 function initStarParticles() {
@@ -435,7 +435,7 @@ function initStarParticles() {
 
   for (let i = 0; i < NUM_PARTICLES; i++) {
     const t = Math.random();
-    const minR = 6;
+    const minR = 2;
     const maxR = 3 * R;
     const orbitR = minR + (maxR - minR) * t * t;
 
@@ -444,7 +444,7 @@ function initStarParticles() {
     const speed = 0.055 * Math.pow(maxR / Math.max(orbitR, 4), 0.65);
 
     const centreness = 1 - orbitR / maxR;
-    const size = 0.5 + centreness * 2.2 * Math.random();
+    const size = 0.5 + centreness * 3.2 * Math.random();
 
     const alpha = (0.12 + 0.7 * centreness * centreness).toFixed(2);
     const isTeal = Math.random() < 0.18;
